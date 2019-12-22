@@ -1,28 +1,39 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import PollService from "./services/PollService";
 
 export default {
-  name: 'app',
-  components: {
-    HelloWorld
+  name: "App",
+  data(){
+    return {
+      pollService: null
+    }
+  },
+  created() {
+    const config = {
+      checkResponse: this.checkResponse,
+      onComplete: this.onComplete,
+      maxTries: 5,
+      inverval: 2000,
+      // endTime: +new Date() + 1000 * 3
+    };
+    this.pollService = new PollService(config);
+    this.pollService.poll();
+  },
+  beforeDestroy() {
+    this.pollService.endPolling();
+  },
+  methods: {
+    checkResponse(response) {
+      return response === "ok";
+    },
+    onComplete() {
+      console.info("Response is OK. I'm done.");
+    }
   }
-}
+};
 </script>
-
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
